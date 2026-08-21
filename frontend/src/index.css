@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+@layer base {
+  /* All color tokens are stored as bare OKLCH component triplets ("L C H",
+     no oklch() wrapper) so tailwind.config.js can wrap them uniformly as
+     oklch(var(--x) / <alpha-value>) - that's what makes Tailwind's opacity
+     modifiers (bg-primary/10, bg-destructive/30, etc.) work correctly across
+     both this default theme and the admin theme below. Values converted
+     from the original brand HSL palette via sRGB -> OKLab -> OKLCH. */
+  :root {
+    /* Page background is a light slate, distinct from --card (white), so
+       cards visibly sit on top of the page instead of blending into it. */
+    --background: 0.9676 0.007 247.8971;
+    --foreground: 0.2253 0.0621 275.4722;
+
+    --card: 1 0 89.8756;
+    --card-foreground: 0.2253 0.0621 275.4722;
+
+    --popover: 1 0 89.8756;
+    --popover-foreground: 0.2253 0.0621 275.4722;
+
+    /* Mapped to brand-blue (#1E2B7A) */
+    --primary: 0.3303 0.139 270.6944;
+    --primary-foreground: 1 0 89.8756;
+
+    --secondary: 0.9676 0.007 247.8971;
+    --secondary-foreground: 0.2253 0.0621 275.4722;
+
+    --muted: 0.9676 0.007 247.8971;
+    --muted-foreground: 0.5564 0.0398 256.8166;
+
+    /* Mapped to brand-sky (#2FA8E0) */
+    --accent: 0.6724 0.1362 236.9051;
+    --accent-foreground: 0.2253 0.0621 275.4722;
+
+    --destructive: 0.5786 0.2137 27.1659;
+    --destructive-foreground: 1 0 89.8756;
+
+    --border: 0.9258 0.0132 255.0276;
+    --input: 0.9258 0.0132 255.0276;
+    --ring: 0.6724 0.1362 236.9051;
+
+    --radius: 0.75rem;
+    --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* Applied via the "dark" class the useAdminTheme hook toggles on a wrapper
+     div around /admin - not on <html>, since dark mode is scoped to the
+     admin dashboard only. CSS variables still cascade normally to every
+     descendant of that wrapper. */
+  .dark {
+    --background: 0.1573 0.0228 265.6559;
+    --foreground: 0.9838 0.0035 247.8583;
+
+    --card: 0.2093 0.0322 265.9585;
+    --card-foreground: 0.9838 0.0035 247.8583;
+
+    --popover: 0.2093 0.0322 265.9585;
+    --popover-foreground: 0.9838 0.0035 247.8583;
+
+    /* Mapped to brand-sky (#2FA8E0), brighter for dark backgrounds */
+    --primary: 0.6724 0.1362 236.9051;
+    --primary-foreground: 0.1573 0.0228 265.6559;
+
+    --secondary: 0.2753 0.0364 259.6978;
+    --secondary-foreground: 0.9838 0.0035 247.8583;
+
+    --muted: 0.2753 0.0364 259.6978;
+    --muted-foreground: 0.71 0.0348 256.7872;
+
+    --accent: 0.6724 0.1362 236.9051;
+    --accent-foreground: 0.9838 0.0035 247.8583;
+
+    --destructive: 0.5681 0.1943 25.9619;
+    --destructive-foreground: 1 0 89.8756;
+
+    --border: 0.3038 0.0417 259.6818;
+    --input: 0.3038 0.0417 259.6818;
+    --ring: 0.6724 0.1362 236.9051;
+  }
+
+  /* Admin dashboard theme (tweakcn "cyberpunk"). Scoped to a wrapper div
+     around /admin (see AdminPage.tsx's `admin-theme` class) so it never
+     leaks into the public logger form's shared Input/Select/Button styling.
+     Values pasted from https://tweakcn.com/r/themes/cyberpunk.json, with the
+     oklch() wrapper stripped to match the bare-triplet convention above. */
+  .admin-theme {
+    --background: 0.9816 0.0017 247.839;
+    --foreground: 0.1649 0.0352 281.8285;
+    --card: 1 0 0;
+    --card-foreground: 0.1649 0.0352 281.8285;
+    --popover: 1 0 0;
+    --popover-foreground: 0.1649 0.0352 281.8285;
+    --primary: 0.6726 0.2904 341.4084;
+    --primary-foreground: 1 0 0;
+    --secondary: 0.9595 0.02 286.0164;
+    --secondary-foreground: 0.1649 0.0352 281.8285;
+    --muted: 0.9595 0.02 286.0164;
+    /* Source theme set this equal to --foreground (no visible dimming for
+       "muted" text) - nudged the lightness up so text-muted-foreground is
+       actually distinguishable from full text in light admin mode. */
+    --muted-foreground: 0.4384 0.0352 281.8285;
+    --accent: 0.8903 0.1739 171.269;
+    --accent-foreground: 0.1649 0.0352 281.8285;
+    --destructive: 0.6535 0.2348 34.037;
+    --destructive-foreground: 1 0 0;
+    --border: 0.9205 0.0086 225.0878;
+    --input: 0.9205 0.0086 225.0878;
+    --ring: 0.6726 0.2904 341.4084;
+    --radius: 0.5rem;
+    --font-sans: "Outfit", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --tracking-normal: 0em;
+    font-family: var(--font-sans);
+    letter-spacing: var(--tracking-normal);
+  }
+
+  .admin-theme.dark {
+    --background: 0.1649 0.0352 281.8285;
+    --foreground: 0.9513 0.0074 260.7315;
+    --card: 0.2542 0.0611 281.1423;
+    --card-foreground: 0.9513 0.0074 260.7315;
+    --popover: 0.2542 0.0611 281.1423;
+    --popover-foreground: 0.9513 0.0074 260.7315;
+    --primary: 0.6726 0.2904 341.4084;
+    --primary-foreground: 1 0 0;
+    --secondary: 0.2542 0.0611 281.1423;
+    --secondary-foreground: 0.9513 0.0074 260.7315;
+    --muted: 0.2123 0.0522 280.9917;
+    --muted-foreground: 0.6245 0.05 278.1046;
+    --accent: 0.8903 0.1739 171.269;
+    --accent-foreground: 0.1649 0.0352 281.8285;
+    --destructive: 0.6535 0.2348 34.037;
+    --destructive-foreground: 1 0 0;
+    --border: 0.3279 0.0832 280.789;
+    --input: 0.3279 0.0832 280.789;
+    --ring: 0.6726 0.2904 341.4084;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-slate-100 text-slate-900 antialiased;
+    font-family: var(--font-sans);
+  }
+}
+
+/* Keep form inputs at 16px on mobile so iOS Safari doesn't auto-zoom on focus. */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+@media (min-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 0.875rem;
+  }
+}

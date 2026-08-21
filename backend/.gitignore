@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+
+# Generated at runtime - keep the folders but not their contents
+data/*.xlsx
+uploads/*
+!uploads/.gitkeep
