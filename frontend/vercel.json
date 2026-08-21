@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://inspire-pg-reporting-system-fwpk.vercel.app/api/$1"
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
