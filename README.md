@@ -242,9 +242,10 @@ view every submitted record in a sortable, filterable table.
 - **Session**: lasts `SESSION_TTL_HOURS` (default 8h), then the admin has to
   log in again. `GET /api/admin/session` is used on page load to restore the
   logged-in state without re-entering credentials.
-- **Brute-force protection**: the login endpoint locks out an IP for 15
-  minutes after 5 failed attempts (in-memory, per backend process — see the
-  concurrency caveat in §8 for why this doesn't span multiple instances).
+- **No login rate limiting**: the login endpoint does not lock out repeated
+  failed attempts. Set a real `ADMIN_PASSWORD` (not the `admin123` default)
+  before deploying anywhere public — this is the only thing standing between
+  the internet and the admin login.
 - **Table**: sortable by clicking any column header (toggles ascending/
   descending), plus a text search (matches first name, last name, or SID) and
   Area / Seller Type dropdown filters. All filtering/sorting happens
@@ -309,7 +310,7 @@ Simple liveness check; returns `{ "status": "ok", "areas": [...] }`.
 Content-Type: `application/json`, body `{ "username": string, "password": string }`.
 On success, sets the `logger_admin_session` httpOnly cookie and returns
 `{ "success": true, "message": "Logged in." }`. Returns `401` for bad
-credentials, `429` if the calling IP is temporarily locked out.
+credentials. Not rate-limited — see §10 on why a real `ADMIN_PASSWORD` matters.
 
 ### `POST /api/admin/logout`
 

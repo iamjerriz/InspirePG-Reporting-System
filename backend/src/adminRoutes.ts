@@ -2,11 +2,8 @@ import { Request, Response, Router } from "express";
 import { z } from "zod";
 import {
   ADMIN_COOKIE_NAME,
-  clearFailedAttempts,
   getCookieMaxAgeMs,
   isAdminAuthenticated,
-  isRateLimited,
-  recordFailedAttempt,
   requireAdminAuth,
   signAdminToken,
   verifyAdminCredentials,
@@ -36,16 +33,6 @@ const COOKIE_OPTIONS = {
 };
 
 router.post("/login", (req, res) => {
-  const ip = req.ip ?? "unknown";
-
-  if (isRateLimited(ip)) {
-    res.status(429).json({
-      success: false,
-      message: "Too many failed login attempts. Please try again later.",
-    });
-    return;
-  }
-
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ success: false, message: "Username and password are required." });
@@ -54,12 +41,10 @@ router.post("/login", (req, res) => {
 
   const { username, password } = parsed.data;
   if (!verifyAdminCredentials(username, password)) {
-    recordFailedAttempt(ip);
     res.status(401).json({ success: false, message: "Invalid username or password." });
     return;
   }
 
-  clearFailedAttempts(ip);
   const token = signAdminToken();
   res.cookie(ADMIN_COOKIE_NAME, token, {
     ...COOKIE_OPTIONS,

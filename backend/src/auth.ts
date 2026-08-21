@@ -63,33 +63,3 @@ export function isAdminAuthenticated(req: Request): boolean {
     return false;
   }
 }
-
-// Basic in-memory brute-force protection for the login endpoint. Not shared
-// across processes/instances, but enough to slow down naive password guessing
-// against a single internal-tool deployment.
-const MAX_ATTEMPTS = 5;
-const LOCKOUT_WINDOW_MS = 15 * 60 * 1000;
-const attemptsByIp = new Map<string, { count: number; firstAttemptAt: number }>();
-
-export function isRateLimited(ip: string): boolean {
-  const entry = attemptsByIp.get(ip);
-  if (!entry) return false;
-  if (Date.now() - entry.firstAttemptAt > LOCKOUT_WINDOW_MS) {
-    attemptsByIp.delete(ip);
-    return false;
-  }
-  return entry.count >= MAX_ATTEMPTS;
-}
-
-export function recordFailedAttempt(ip: string): void {
-  const entry = attemptsByIp.get(ip);
-  if (!entry || Date.now() - entry.firstAttemptAt > LOCKOUT_WINDOW_MS) {
-    attemptsByIp.set(ip, { count: 1, firstAttemptAt: Date.now() });
-    return;
-  }
-  entry.count += 1;
-}
-
-export function clearFailedAttempts(ip: string): void {
-  attemptsByIp.delete(ip);
-}
