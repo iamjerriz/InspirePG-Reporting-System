@@ -20,6 +20,7 @@ export default function LoggerForm() {
     handleSubmit,
     watch,
     setValue,
+    clearErrors,
     control,
     reset,
     formState: { errors, isSubmitting },
@@ -152,7 +153,11 @@ export default function LoggerForm() {
             value={field.value}
             onValueChange={(value) => {
               field.onChange(value);
-              setValue("sellerType", "", { shouldValidate: true });
+              // Reset the now-stale seller type without forcing validation -
+              // otherwise "Please select a seller type" flashes immediately,
+              // before the user has had a chance to pick one.
+              setValue("sellerType", "");
+              clearErrors("sellerType");
             }}
             onBlur={field.onBlur}
           />

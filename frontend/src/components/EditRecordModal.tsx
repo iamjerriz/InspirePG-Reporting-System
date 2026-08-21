@@ -34,6 +34,7 @@ export default function EditRecordModal({ entry, onClose, onSaved }: EditRecordM
     handleSubmit,
     watch,
     setValue,
+    clearErrors,
     control,
     formState: { errors },
   } = useForm<EditLogEntryValues>({
@@ -142,7 +143,11 @@ export default function EditRecordModal({ entry, onClose, onSaved }: EditRecordM
                   value={field.value}
                   onValueChange={(value) => {
                     field.onChange(value);
-                    setValue("sellerType", "", { shouldValidate: true });
+                    // Reset the now-stale seller type without forcing
+                    // validation - otherwise the error flashes immediately,
+                    // before the user has had a chance to pick one.
+                    setValue("sellerType", "");
+                    clearErrors("sellerType");
                   }}
                   onBlur={field.onBlur}
                 />
