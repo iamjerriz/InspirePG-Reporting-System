@@ -136,18 +136,18 @@ JWT_SECRET=
 SESSION_TTL_HOURS=8
 ```
 
-| Variable                    | Purpose                                                                 |
-| ---------------------------- | ------------------------------------------------------------------------ |
-| `PORT`                       | Port the Express server listens on                                      |
-| `MAX_FILE_SIZE_MB`           | Maximum accepted image size                                             |
-| `CORS_ORIGIN`                | Allowed origin for CORS (only relevant if you bypass the Vite proxy)    |
-| `SUPABASE_URL`                | **Required.** Your Supabase project's URL (Project Settings → API)     |
-| `SUPABASE_SERVICE_ROLE_KEY`   | **Required.** Service role key — bypasses RLS, backend-only, never expose to the frontend |
-| `SUPABASE_STORAGE_BUCKET`     | Storage bucket for proof images (default `proofs`, created by `schema.sql`) |
-| `ADMIN_USERNAME`              | Login username for `/admin`                                             |
-| `ADMIN_PASSWORD`              | Login password for `/admin` — **change this before deploying anywhere shared** |
-| `JWT_SECRET`                  | Signing key for admin session tokens. If unset, a random one is generated at startup (sessions won't survive a restart) — set this explicitly in production |
-| `SESSION_TTL_HOURS`           | How long an admin login session lasts before requiring re-login          |
+| Variable                    | Purpose                                                                                                                                                     |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PORT`                      | Port the Express server listens on                                                                                                                          |
+| `MAX_FILE_SIZE_MB`          | Maximum accepted image size                                                                                                                                 |
+| `CORS_ORIGIN`               | Allowed origin for CORS (only relevant if you bypass the Vite proxy)                                                                                        |
+| `SUPABASE_URL`              | **Required.** Your Supabase project's URL (Project Settings → API)                                                                                          |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Required.** Service role key — bypasses RLS, backend-only, never expose to the frontend                                                                   |
+| `SUPABASE_STORAGE_BUCKET`   | Storage bucket for proof images (default `proofs`, created by `schema.sql`)                                                                                 |
+| `ADMIN_USERNAME`            | Login username for `/admin`                                                                                                                                 |
+| `ADMIN_PASSWORD`            | Login password for `/admin` — **change this before deploying anywhere shared**                                                                              |
+| `JWT_SECRET`                | Signing key for admin session tokens. If unset, a random one is generated at startup (sessions won't survive a restart) — set this explicitly in production |
+| `SESSION_TTL_HOURS`         | How long an admin login session lasts before requiring re-login                                                                                             |
 
 The backend throws on startup if `SUPABASE_URL` or `SUPABASE_SERVICE_ROLE_KEY`
 is missing — there's no local-file fallback anymore.
@@ -188,7 +188,7 @@ Then open **http://localhost:5173**.
 - SID is always stored and validated as a plain string, never coerced to a
   number, so leading zeros or non-numeric SIDs are preserved.
 - `id` is a real auto-incrementing primary key (Postgres `generated always as
-  identity`) — the admin edit/delete API addresses records by this `id`.
+identity`) — the admin edit/delete API addresses records by this `id`.
 
 ### Concurrency
 
@@ -223,7 +223,7 @@ uses a Supabase key at all; it only talks to the Express API.
   column of `log_entries` — the image binary itself is never stored in
   Postgres.
 - The `proofs` bucket is **private** (not public). `GET
-  /api/admin/proof/:filename` (admin-only) issues a short-lived (60s) signed
+/api/admin/proof/:filename` (admin-only) issues a short-lived (60s) signed
   URL via `createSignedUrl` and redirects to it — there's no public,
   guessable URL for any proof image.
 
@@ -267,7 +267,7 @@ view every submitted record in a sortable, filterable table.
 
 Content-Type: `multipart/form-data`
 
-| Field        | Type   | Notes                                              |
+| Field        | Type   | Notes                                               |
 | ------------ | ------ | --------------------------------------------------- |
 | `firstName`  | string | required, non-empty                                 |
 | `lastName`   | string | required, non-empty                                 |
@@ -381,8 +381,8 @@ the single-writer/single-filesystem constraints that came with that approach.
 A few things carried over deliberately, and a few didn't:
 
 - **Carried over as-is**: admin auth (still a single shared username/password
-  + custom JWT cookie, not Supabase Auth), the `timestamp` text format, and
-  the Area/Seller Type validation config.
+  - custom JWT cookie, not Supabase Auth), the `timestamp` text format, and
+    the Area/Seller Type validation config.
 - **Changed**: records are now addressed by a real Postgres primary key
   (`id`) instead of array position; concurrent writes are handled by Postgres
   instead of an in-process queue; proof images live in a private Storage
@@ -405,11 +405,11 @@ All Area → Seller Type mappings live in one object per project:
 
 ```ts
 export const sellerTypesByArea = {
-  Cavite: ["FSE BAU", "FSE TB", "CBA", "Wiredup", "PTM", "ConnectPro"],
-  Laguna: ["FSE BAU", "FSE TB", "CBA", "GMC", "JASS", "NOAH GENESIS"],
-  BaMiro: ["FSE BAU", "FSE TB", "STL", "CBA", "BATANGAS EMVIEM", "MINDORO EMVIEM"],
-  "Quezon Province": ["FSE BAU", "CBA INHOUSE", "CBA RCJC", "STL"],
-  Bicol: ["FSE BAU", "STL", "CBA TEAMBASED", "CBA INHOUSE", "RMS"],
+  Cavite: ['FSE BAU', 'FSE TB', 'CBA', 'Wiredup', 'PTM', 'ConnectPro'],
+  Laguna: ['FSE BAU', 'FSE TB', 'CBA', 'GMC', 'JASS', 'NOAH GENESIS'],
+  BaMiro: ['FSE BAU', 'FSE TB', 'STL', 'CBA', 'BATANGAS EMVIEM', 'MINDORO EMVIEM'],
+  'Quezon Province': ['FSE BAU', 'CBA INHOUSE', 'CBA RCJC', 'STL'],
+  Bicol: ['FSE BAU', 'STL', 'CBA TEAMBASED', 'CBA INHOUSE', 'RMS'],
 };
 ```
 
