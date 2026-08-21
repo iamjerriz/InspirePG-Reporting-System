@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { updateLogEntry } from "../api/admin";
 import { AREAS, sellerTypesByArea, type Area } from "../config/sellerTypes";
@@ -50,6 +50,22 @@ export default function EditRecordModal({ entry, onClose, onSaved }: EditRecordM
 
   const selectedArea = watch("area") as Area | undefined;
   const sellerTypeOptions = selectedArea ? sellerTypesByArea[selectedArea] : [];
+
+  // Reset the seller type whenever the area changes, once React has
+  // committed that change - rather than reaching into the area field's own
+  // onChange handler and racing its side effects against RHF's (async)
+  // revalidation. Skip the very first run: the modal opens with the entry's
+  // existing (area, sellerType) pair pre-filled, and that combo is already
+  // valid, so it must not be wiped out just because this effect mounted.
+  const isFirstAreaEffect = useRef(true);
+  useEffect(() => {
+    if (isFirstAreaEffect.current) {
+      isFirstAreaEffect.current = false;
+      return;
+    }
+    setValue("sellerType", "");
+    clearErrors("sellerType");
+  }, [selectedArea, setValue, clearErrors]);
 
   const { ref: proofRegisterRef, ...proofRegisterRest } = register("proof", {
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,14 +157,7 @@ export default function EditRecordModal({ entry, onClose, onSaved }: EditRecordM
                   options={AREAS}
                   error={errors.area?.message}
                   value={field.value}
-                  onValueChange={(value) => {
-                    field.onChange(value);
-                    // Reset the now-stale seller type without forcing
-                    // validation - otherwise the error flashes immediately,
-                    // before the user has had a chance to pick one.
-                    setValue("sellerType", "");
-                    clearErrors("sellerType");
-                  }}
+                  onValueChange={field.onChange}
                   onBlur={field.onBlur}
                 />
               )}

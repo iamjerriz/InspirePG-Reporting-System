@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { AREAS, sellerTypesByArea, type Area } from "../config/sellerTypes";
@@ -37,6 +37,15 @@ export default function LoggerForm() {
 
   const selectedArea = watch("area") as Area | undefined;
   const sellerTypeOptions = selectedArea ? sellerTypesByArea[selectedArea] : [];
+
+  // Reset the seller type whenever the area changes, once React has
+  // committed that change - rather than reaching into the area field's own
+  // onChange handler and racing its side effects against RHF's (async)
+  // revalidation.
+  useEffect(() => {
+    setValue("sellerType", "");
+    clearErrors("sellerType");
+  }, [selectedArea, setValue, clearErrors]);
 
   const [watchedFirstName, watchedLastName, watchedSid, watchedSellerType, watchedProof] = watch([
     "firstName",
@@ -151,14 +160,7 @@ export default function LoggerForm() {
             options={AREAS}
             error={errors.area?.message}
             value={field.value}
-            onValueChange={(value) => {
-              field.onChange(value);
-              // Reset the now-stale seller type without forcing validation -
-              // otherwise "Please select a seller type" flashes immediately,
-              // before the user has had a chance to pick one.
-              setValue("sellerType", "");
-              clearErrors("sellerType");
-            }}
+            onValueChange={field.onChange}
             onBlur={field.onBlur}
           />
         )}
